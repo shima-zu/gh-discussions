@@ -61,7 +61,16 @@ func listDiscussions() error {
 
 	// Print the pull requests in a table format
 	for _, d := range discussions {
-		printer.AddField(fmt.Sprintf("#%d", d.Number), tableprinter.WithColor(green))
+		var numberColorFunc func(string) string
+		if d.State == "open" {
+			numberColorFunc = green
+		} else if d.State == "closed" {
+			numberColorFunc = red
+		} else {
+			numberColorFunc = gray
+		}
+
+		printer.AddField(numberColorFunc(fmt.Sprintf("#%d", d.Number)))
 		printer.AddField(d.Title)
 		printer.AddField(d.State)
 		printer.AddField(d.CreatedAt.Format("2006-01-02 15:04:05"))
@@ -82,4 +91,8 @@ func green(text string) string {
 
 func gray(text string) string {
 	return "\033[90m" + text + "\033[0m"
+}
+
+func red(text string) string {
+	return "\033[31m" + text + "\033[0m"
 }
